@@ -25,7 +25,7 @@ pip install -r requirements.txt
 uvicorn app:app --reload
  
 cd frontend
-npm install
+npm install (libraries to download in the Libraries.txt file in the frontend folder)
 npm run dev
 
 
