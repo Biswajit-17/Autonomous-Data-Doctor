@@ -144,8 +144,8 @@ async def clean_data(payload: dict = Body(...)):
         return {
             "status": "success",
             "message": "Cleaning complete",
-            "download_url": f"http://127.0.0.1:8000/download/{clean_filename}",
-            "report_url": f"http://127.0.0.1:8000/download/{report_filename}",
+            "download_url": f"https://autonomous-data-doctor.onrender.com/download/{clean_filename}",
+            "report_url": f"https://autonomous-data-doctor.onrender.com/download/{report_filename}",
             "after_stats": after_stats
         }
 
