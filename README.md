@@ -17,14 +17,13 @@
 
 ## ⚙️ How to Run
 
-### 1. Backend Setup
+### 1. Backend and Frontend Setup
 ```bash
 cd backend
 pip install -r requirements.txt
 # Create a .env file with GOOGLE_API_KEY=your_key_here and change the model to your liking in the doctor.py file
 uvicorn app:app --reload
-
-### 2. Frontend Setup 
+ 
 cd frontend
 npm install
 npm run dev
