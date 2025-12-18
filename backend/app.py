@@ -4,7 +4,7 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException, UploadFile, File, Body
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-import google.generativeai as genai
+from groq import Groq
 from dotenv import load_dotenv
 
 from core.profiler import DataProfiler
@@ -15,10 +15,10 @@ from core.report_generator import generate_pdf
 load_dotenv()
 
 # --- CONFIGURATION ---
-api_key = os.getenv("GOOGLE_API_KEY")
+api_key = os.getenv("GROQ_API_KEY")
 if not api_key:
-    raise ValueError("No GOOGLE_API_KEY found")
-genai.configure(api_key=api_key)
+    raise ValueError("⚠️ Warning: GROQ_API_KEY not found in environment")
+client = Groq(api_key=api_key)
 
 # Setup temp folder
 TEMP_FOLDER = "temp"
