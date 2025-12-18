@@ -14,7 +14,7 @@ class DataDoctorAgent:
         
         self.client = Groq(api_key=api_key)
         # We use Llama 3 70B (High intelligence) or 8B (Super fast)
-        self.model = "llama3-70b-8192" 
+        self.model = "llama-3.3-70b-versatile" 
 
     def diagnose_and_prescribe(self, data_profile):
         """
