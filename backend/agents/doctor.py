@@ -1,18 +1,26 @@
-import google.generativeai as genai
-import json
 import os
+import json
+import re
+from groq import Groq
 
 class DataDoctorAgent:
     def __init__(self):
-        self.model = genai.GenerativeModel('gemini-2.5-pro')
+        # Initialize Groq Client
+        # It automatically looks for 'GROQ_API_KEY' in environment variables
+        api_key = os.getenv("GROQ_API_KEY")
+        if not api_key:
+            # Fallback for local testing if env var isn't set, but try to avoid hardcoding
+            print("⚠️ Warning: GROQ_API_KEY not found in environment")
+        
+        self.client = Groq(api_key=api_key)
+        # We use Llama 3 70B (High intelligence) or 8B (Super fast)
+        self.model = "llama3-70b-8192" 
 
     def diagnose_and_prescribe(self, data_profile):
         """
-        Analyzes statistics and writes Python code.
+        Uses Groq (Llama 3) to analyze stats and write code.
         """
-        # Create a condensed profile to save token space
-        # We only send column names, types, and missing/skew stats
-        # This fixes issues where the prompt gets too big for the free tier
+        # Create condensed profile to save tokens
         condensed_profile = {}
         for col, stats in data_profile.get("column_details", {}).items():
             condensed_profile[col] = {
@@ -23,47 +31,53 @@ class DataDoctorAgent:
             }
 
         prompt = f"""
-        You are the Auto Data Doctor. Analyze this dataset profile and output a python cleaning script.
-        
+        You are an expert Data Scientist. Analyze this dataset profile and generate Python cleaning code.
+
         DATA PROFILE:
         {json.dumps(condensed_profile, indent=2)}
 
-        RULES:
-        1. If missing > 50%, drop column.
-        2. If numeric & skewed (>1), impute median.
-        3. If numeric & normal, impute mean.
-        4. If categorical, impute mode.
-        5. Cap outliers using IQR.
+        INSTRUCTIONS:
+        1. Identify issues (High missing %, Skewness > 1, Outliers).
+        2. Decide actions (Drop if missing > 50%, Impute Median if skewed, Mean if normal).
+        3. Write a Python function `clean_data(df)` using pandas/numpy.
 
-        RESPONSE FORMAT (Strict JSON):
+        RESPONSE FORMAT:
+        You must output ONLY valid JSON.
         {{
-            "diagnosis_summary": "Brief text summary of issues.",
+            "diagnosis_summary": "One sentence summary of issues.",
             "strategies_defined": [
-                {{"column": "ColName", "issue": "Missing", "action": "Drop"}}
+                {{"column": "ColName", "issue": "Skewed", "action": "Median Imputation"}}
             ],
-            "generated_python_code": "import pandas as pd\\nimport numpy as np\\ndef clean_data(df):\\n    # Write code here\\n    return df"
+            "generated_python_code": "import pandas as pd\\n..."
         }}
         """
 
         try:
-            response = self.model.generate_content(prompt)
-            text_response = response.text
+            chat_completion = self.client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are a JSON-only API. Do not output Markdown blocks. Output raw JSON."
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    }
+                ],
+                model=self.model,
+                temperature=0.1, # Keep it strictly logical
+                response_format={"type": "json_object"} # Forces valid JSON (Groq feature)
+            )
+
+            text_response = chat_completion.choices[0].message.content
             
-            # Debug: Print raw AI response to terminal
-            print("\n--- 🤖 AI RAW RESPONSE ---")
-            print(text_response)
-            print("--------------------------\n")
-            
-            clean_text = text_response.replace("```json", "").replace("```", "").strip()
-            diagnosis = json.loads(clean_text)
-            return diagnosis
+            # Parse JSON
+            return json.loads(text_response)
 
         except Exception as e:
-            # Debug: Print the specific error
-            print(f"\n❌ AI AGENT ERROR: {str(e)}\n")
-            
+            print(f"❌ GROQ AI ERROR: {str(e)}")
             return {
-                "diagnosis_summary": "Failed to generate diagnosis.",
-                "generated_python_code": "",
-                "strategies_defined": []
+                "diagnosis_summary": f"Error generating diagnosis: {str(e)}",
+                "strategies_defined": [],
+                "generated_python_code": ""
             }
