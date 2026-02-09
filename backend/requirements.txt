@@ -2,11 +2,6 @@ fastapi
 uvicorn
 python-multipart
 
-pandas
-numpy
-scikit-learn
-scipy
-
 google-generativeai
 groq
 python-dotenv
