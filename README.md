@@ -1,6 +1,7 @@
 # 🩺 Auto Data Doctor
 
 **An Autonomous AI Agent that diagnoses, cleans, and generates reports for messy datasets.**
+**⚠️ Demo Note: The backend is hosted on Render's Free Tier. It spins down after inactivity. Please allow up to 50 seconds for the first request (Diagnosis) to complete while the server wakes up.**
 
 ## 🚀 Features
 - **Smart Ingestion:** Supports `.csv` and `.xlsx` files.
