@@ -5,15 +5,11 @@ from groq import Groq
 
 class DataDoctorAgent:
     def __init__(self):
-        # Initialize Groq Client
-        # It automatically looks for 'GROQ_API_KEY' in environment variables
         api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
-            # Fallback for local testing if env var isn't set, but try to avoid hardcoding
-            print("⚠️ Warning: GROQ_API_KEY not found in environment")
+            print("Warning: GROQ_API_KEY not found in environment")
         
         self.client = Groq(api_key=api_key)
-        # We use Llama 3 70B (High intelligence) or 8B (Super fast)
         self.model = "llama-3.3-70b-versatile" 
 
     def diagnose_and_prescribe(self, data_profile):
@@ -61,21 +57,21 @@ class DataDoctorAgent:
                     },
                     {
                         "role": "user",
-                        "content": prompt,
+                        "content": prompt, 
                     }
                 ],
                 model=self.model,
-                temperature=0.1, # Keep it strictly logical
-                response_format={"type": "json_object"} # Forces valid JSON (Groq feature)
+                temperature=0.1, 
+                response_format={"type": "json_object"} 
             )
 
             text_response = chat_completion.choices[0].message.content
             
-            # Parse JSON
+            
             return json.loads(text_response)
 
         except Exception as e:
-            print(f"❌ GROQ AI ERROR: {str(e)}")
+            print(f"Error: {str(e)}")
             return {
                 "diagnosis_summary": f"Error generating diagnosis: {str(e)}",
                 "strategies_defined": [],

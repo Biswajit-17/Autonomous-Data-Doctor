@@ -1,9 +1,9 @@
 from fpdf import FPDF
 import os
 
-class PDFReport(FPDF):
+class PDFReport(FPDF): 
     def header(self):
-        # Professional Header
+
         self.set_font('Arial', 'B', 20)
         self.set_text_color(33, 150, 243) # Blue
         self.cell(0, 10, 'Auto Data Doctor', 0, 1, 'L')
@@ -12,7 +12,6 @@ class PDFReport(FPDF):
         self.set_text_color(100, 100, 100) # Grey
         self.cell(0, 5, 'Automated Dataset Diagnosis & Cleaning Report', 0, 1, 'L')
         
-        # Line break
         self.ln(5)
         self.set_draw_color(200, 200, 200)
         self.line(10, 25, 200, 25)
@@ -21,35 +20,30 @@ class PDFReport(FPDF):
     def chapter_title(self, title):
         self.set_font('Arial', 'B', 14)
         self.set_text_color(0, 0, 0)
-        self.set_fill_color(240, 245, 255) # Very light blue background
+        self.set_fill_color(240, 245, 255) 
         self.cell(0, 10, f"  {title}", 0, 1, 'L', 1)
         self.ln(5)
 
     def chapter_body(self, body):
         self.set_font('Arial', '', 11)
         self.set_text_color(50, 50, 50)
-        self.multi_cell(0, 8, body) # 8 is line height (better spacing)
+        self.multi_cell(0, 8, body) 
         self.ln()
 
     def add_bullet_point(self, text):
         self.set_font('Arial', '', 11)
         self.set_text_color(50, 50, 50)
-        self.cell(10) # Indent
-        self.multi_cell(0, 8, f"{chr(149)} {text}") # Bullet char
+        self.cell(10) 
+        self.multi_cell(0, 8, f"{chr(149)} {text}") 
 
 def generate_pdf(filename, initial_stats, final_stats, ai_summary, strategies, output_folder="temp"):
     pdf = PDFReport()
     pdf.add_page()
     
-    # ... (Keep all the generation logic lines: 1. Diagnosis, 2. Procedures, 3. Metrics) ...
-    # ... (You don't need to change the content logic, just the filename logic below) ...
-    
-    # --- 1. Diagnosis Summary ---
     pdf.chapter_title("1. Executive Diagnosis")
     clean_summary = ai_summary.encode('latin-1', 'replace').decode('latin-1')
     pdf.chapter_body(clean_summary)
     
-    # --- 2. Specific Procedures Executed ---
     pdf.chapter_title("2. Procedures Executed")
     if strategies and len(strategies) > 0:
         for item in strategies:
@@ -65,12 +59,10 @@ def generate_pdf(filename, initial_stats, final_stats, ai_summary, strategies, o
         pdf.add_bullet_point("Removed anomalies.")
     pdf.ln(5)
 
-    # --- 3. Health Metrics Comparison ---
     pdf.chapter_title("3. Health Metrics Comparison")
     pdf.set_font('Arial', 'B', 10)
     pdf.set_fill_color(230, 230, 230)
     
-    # Headers
     pdf.cell(60, 10, "Metric", 1, 0, 'C', 1)
     pdf.cell(60, 10, "Before Treatment", 1, 0, 'C', 1)
     pdf.cell(60, 10, "After Treatment", 1, 1, 'C', 1)
@@ -96,8 +88,7 @@ def generate_pdf(filename, initial_stats, final_stats, ai_summary, strategies, o
     pdf.cell(60, 10, str(missing_before), 1, 0, 'C')
     pdf.cell(60, 10, str(missing_after), 1, 1, 'C')
 
-    # --- FIXED FILENAME LOGIC IS HERE ---
-    # Remove ANY extension (.xls, .xlsx, .csv) and force .pdf
+    # File name logic
     base_name = os.path.splitext(filename)[0]
     report_filename = f"Report_{base_name}.pdf"
     

@@ -14,19 +14,16 @@ from core.report_generator import generate_pdf
 
 load_dotenv()
 
-# --- CONFIGURATION ---
 api_key = os.getenv("GROQ_API_KEY")
 if not api_key:
-    raise ValueError("⚠️ Warning: GROQ_API_KEY not found in environment")
+    raise ValueError("Warning: GROQ_API_KEY not found in environment")
 client = Groq(api_key=api_key)
 
-# Setup temp folder
 TEMP_FOLDER = "temp"
 os.makedirs(TEMP_FOLDER, exist_ok=True)
 
 app = FastAPI(title="Auto Data Doctor API")
 
-# Allow Vite (Port 5173)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], 
@@ -35,7 +32,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- HELPER FUNCTION: SMART LOADER ---
 def load_data(file_path: str) -> pd.DataFrame:
     """
     Intelligently loads data based on file extension.
@@ -47,8 +43,8 @@ def load_data(file_path: str) -> pd.DataFrame:
     else:
         raise ValueError("Unsupported file format. Please upload CSV or Excel.")
 
-# --- ROUTES ---
 
+# --- ROUTES ---
 @app.get("/")
 def read_root():
     return {"status": "active"}
@@ -61,24 +57,24 @@ async def analyze_data(file: UploadFile = File(...)):
     3. Load using smart loader.
     4. Profile & Diagnose.
     """
-    # 1. Validate Extension
+    # Validate Extension
     if not file.filename.endswith(('.csv', '.xlsx', '.xls')):
         raise HTTPException(status_code=400, detail="Only CSV and Excel files are supported.")
 
     try:
-        # 2. Save the file
+        # Save the file
         file_location = f"{TEMP_FOLDER}/{file.filename}"
         with open(file_location, "wb") as f:
             content = await file.read()
             f.write(content)
         
-        # 3. Read Data (Smart Load)
+        # Read Data (Smart Load)
         try:
             df = load_data(file_location)
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Could not read file: {str(e)}")
             
-        # 4. Profile & Diagnose
+        # Profile & Diagnose
         profiler = DataProfiler(df)
         profile_report = profiler.get_profile()
         
@@ -162,7 +158,7 @@ async def download_file(filename: str):
     return FileResponse(
         path=file_path, 
         filename=filename, 
-        media_type='application/octet-stream' # Generic binary type works for both
+        media_type='application/octet-stream' 
     )
 
 if __name__ == "__main__":

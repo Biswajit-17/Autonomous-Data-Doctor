@@ -4,14 +4,10 @@ python-multipart
 
 pandas
 numpy
-scikit-learn
-scipy
 
 google-generativeai
 groq
 python-dotenv
-langchain
-langchain-google-genai
 
 fpdf
 openpyxl
