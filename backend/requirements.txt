@@ -2,11 +2,12 @@ fastapi
 uvicorn
 python-multipart
 
+pandas
+numpy
+
 google-generativeai
 groq
 python-dotenv
-langchain
-langchain-google-genai
 
 fpdf
 openpyxl
