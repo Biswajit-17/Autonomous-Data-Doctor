@@ -6,15 +6,16 @@
 
 ## Features
 - **Smart Ingestion:** Supports `.csv` and `.xlsx` files.
-- **AI Diagnosis:** Uses Google Gemini to detect skewness, outliers, and missing values.
+- **AI Diagnosis:** Uses Groq to detect skewness, outliers, and missing values.
 - **Auto-Cleaning:** Dynamically generates and executes Python cleaning scripts.
 - **Visual Reports:** Shows "Before vs After" health metrics charts.
 - **PDF Certification:** Generates a downloadable medical report for the data.
+- **Clean Data:** Generates a cleaned downloadable dataset.
 
 ## Tech Stack
 - **Frontend:** React (Vite), Tailwind CSS, Recharts, Lucide Icons.
 - **Backend:** Python (FastAPI), Pandas, NumPy.
-- **AI Engine:** Google Gemini Pro (via `google-generativeai`).
+- **AI Engine:** Groq
 - **Reporting:** FPDF.
 
 ## How to Run
